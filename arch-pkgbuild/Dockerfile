@@ -1,6 +1,5 @@
 # BUILD-USING:    docker build -t nandub/arch-pkgbuild .
-# TEST-USING:     docker run --rm -i -t -h=arch-pkgbuild --name=arch-pkgbuild nandub/arch-pkgbuild /bin/bash
-# RUN-USING:      docker run --rm -h=arch-pkgbuild --name=arch-pkgbuild nandub/arch-pkgbuild
+# RUN-USING:      docker run --rm -it -v$(pwd)/build:/build nandub/arch-pkgbuild
 
 #pkgbuild-introspection to test AUR files  on archlinux
 

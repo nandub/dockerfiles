@@ -3,8 +3,9 @@
 # Usage
 
 ```shell
-  $ docker run --rm -i -t -h=arch-pkgbuild \
-    --name=arch-pkgbuild nandub/arch-pkgbuild /bin/bash \
+  $ mkdir ./build
+  $ cp PKGBUILD ./build
+  $ docker run --rm -it -v$(pwd)/build:/build nandub/arch-pkgbuild
 ```
 
 # How to build
