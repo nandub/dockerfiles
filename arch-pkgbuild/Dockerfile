@@ -6,25 +6,25 @@
 
 #VERSION        0.0.1
 
-FROM           nandub/arch-sudo
+FROM           archlinux/base
 MAINTAINER     Fernando Ortiz <dev+docker@nandub.info>
+
+# Update the repositories
+RUN pacman -Syy
+
+# Install pkgbuild-introspection fakeroot
+RUN pacman -S --noconfirm binutils cmake fakeroot file gcc make pkgbuild-introspection sudo
+
+VOLUME build
+
+WORKDIR build
+
+COPY pkg.sh /pkg.sh
+
+RUN groupadd -r docker \
+    && useradd -m docker -g docker -s /bin/bash \
+    && echo '%docker ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER docker
 
-# Update the repositories
-RUN sudo pacman -Syy
-
-# Install pkgbuild-introspection fakeroot
-RUN sudo pacman -S --noconfirm pkgbuild-introspection fakeroot
-
-# Add package to be built
-ADD . /build/
-
-RUN sudo chown -R docker:docker /build/
-
-WORKDIR /build/
-
-# Allow this file to be included into other Dockerfiles for testing
-ONBUILD ADD . /build/
-
-CMD ["mkaurball"]
+CMD ["/pkg.sh"]
