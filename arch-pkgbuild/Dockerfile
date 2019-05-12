@@ -1,29 +1,36 @@
 # BUILD-USING:    docker build -t nandub/arch-pkgbuild .
 # RUN-USING:      docker run --rm -it -v$(pwd)/build:/build nandub/arch-pkgbuild
 
-#pkgbuild-introspection to test AUR files  on archlinux
-
 #VERSION        0.0.1
 
 FROM           archlinux/base
-MAINTAINER     Fernando Ortiz <dev+docker@nandub.info>
+MAINTAINER     Fernando Ortiz <nandub+docker@nandub.info>
 
 # Update the repositories
-RUN pacman -Syy
+RUN pacman-key --refresh-keys \
+    && pacman -Sy --noconfirm sudo
 
-# Install pkgbuild-introspection fakeroot
-RUN pacman -S --noconfirm binutils cmake fakeroot file gcc make pkgbuild-introspection sudo
+# Install
+RUN pacman -Sy --noconfirm awk binutils cmake curl fakeroot file gcc grep make \
+              && rm -fr /var/lib/pacman/sync /var/cache/pacman/pkg /etc/pacman.d/gnupg
 
-VOLUME build
+#RUN pacman -Sy --noconfirm adns bash autoconf automake binutils cmake curl fakeroot file git glib2 icu libtirpc libnsl gcc make m4 openssl pkg-config readline sudo \
+#               && rm -fr /var/lib/pacman/sync /var/cache/pacman/pkg /etc/pacman.d/gnupg
 
-WORKDIR build
-
-COPY pkg.sh /pkg.sh
+WORKDIR /docker
 
 RUN groupadd -r docker \
     && useradd -m docker -g docker -s /bin/bash \
-    && echo '%docker ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    && echo '%docker ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && chown -R docker:docker /docker
+
+COPY pkg.sh /docker/pkg.sh
 
 USER docker
 
-CMD ["/pkg.sh"]
+VOLUME build
+
+ENTRYPOINT ["/bin/bash"]
+
+CMD ["/docker/pkg.sh"]
+
