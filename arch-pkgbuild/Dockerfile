@@ -11,8 +11,7 @@ RUN pacman-key --refresh-keys \
     && pacman -Sy --noconfirm sudo
 
 # Install
-RUN pacman -Sy --noconfirm awk binutils cmake curl fakeroot file gcc grep make \
-              && rm -fr /var/lib/pacman/sync /var/cache/pacman/pkg /etc/pacman.d/gnupg
+RUN pacman -Sy --noconfirm awk binutils cmake curl fakeroot file gcc grep make
 
 #RUN pacman -Sy --noconfirm adns bash autoconf automake binutils cmake curl fakeroot file git glib2 icu libtirpc libnsl gcc make m4 openssl pkg-config readline sudo \
 #               && rm -fr /var/lib/pacman/sync /var/cache/pacman/pkg /etc/pacman.d/gnupg
