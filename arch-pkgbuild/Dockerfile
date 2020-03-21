@@ -6,30 +6,42 @@
 FROM           archlinux/base
 MAINTAINER     Fernando Ortiz <nandub+docker@nandub.info>
 
-# Update the repositories
-RUN pacman-key --refresh-keys \
-    && pacman -Sy --noconfirm sudo
+# Generally, refreshing without sync'ing is discouraged, but we've a clean
+# environment here.
+RUN pacman -Sy --noconfirm archlinux-keyring && \
+    pacman -Sy --noconfirm base-devel git && \
+    pacman -Syu --noconfirm
 
-# Install
-RUN pacman -Sy --noconfirm awk binutils cmake curl fakeroot file gcc grep make
-
-#RUN pacman -Sy --noconfirm adns bash autoconf automake binutils cmake curl fakeroot file git glib2 icu libtirpc libnsl gcc make m4 openssl pkg-config readline sudo \
-#               && rm -fr /var/lib/pacman/sync /var/cache/pacman/pkg /etc/pacman.d/gnupg
-
-WORKDIR /docker
-
+# Allow docker to run stuff as root (to install dependencies):
 RUN groupadd -r docker \
     && useradd -m docker -g docker -s /bin/bash \
-    && echo '%docker ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
-    && chown -R docker:docker /docker
+    && echo "docker ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker
 
-COPY pkg.sh /docker/pkg.sh
+COPY custom-repo.txt pkg.sh /home/docker/
 
+RUN cat /home/docker/custom-repo.txt >> /etc/pacman.conf \
+    && install -d /home/docker/custompkgs -o docker \
+    && repo-add /home/docker/custompkgs/custom.db.tar.gz \
+    && pacman -Sy --noconfirm gettext jq parallel wget \
+    && chown -R docker:docker /home/docker
+
+# Continue execution (and CMD) as docker:
 USER docker
+WORKDIR /home/docker
 
-VOLUME build
+# Auto-fetch GPG keys (for checking signatures):
+RUN mkdir .gnupg && \
+    touch .gnupg/gpg.conf && \
+    echo "keyserver-options auto-key-retrieve" > .gnupg/gpg.conf
 
+RUN git clone https://github.com/AladW/aurutils.git \
+    && cd aurutils \
+    && git checkout 2.3.3 \
+    && make build \
+    && sudo make install \
+    && cd .. && rm -rf aurutils
+
+# Build the package
+WORKDIR /build
 ENTRYPOINT ["/bin/bash"]
-
-CMD ["/docker/pkg.sh"]
-
+CMD ["/home/docker/pkg.sh"]
