@@ -5,6 +5,7 @@ cd /tmp/build
 
 # Install (from AUR) dependencies using aurutils. We avoid using makepkg
 # -s since it is unable to install AUR dependencies.
+sudo pacman -Sy
 aur sync --noconfirm --noview \
     $(pacman --deptest $(source ./PKGBUILD && echo ${depends[@]} ${makedepends[@]}))
 
