@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cp -r /build /tmp/build
+cp -r /build /tmp/
 cd /tmp/build
 
 # Install (from AUR) dependencies using aurutils. We avoid using makepkg
@@ -12,9 +12,9 @@ aur sync --noconfirm --noview \
 set -e
 
 # Do the actual building and install dependencies if needed.
-makepkg -sf --noconfirm 
+makepkg -Sf --noconfirm 
 
 if [ -n "$EXPORT_PKG" ]; then
-    sudo chown $(stat -c '%u:%g' /build/PKGBUILD) ./*.pkg.tar.xz
-    sudo mv ./*.pkg.tar.xz /build
+    sudo chown $(stat -c '%u:%g' /build/PKGBUILD) ./*.pkg.tar.*
+    sudo mv ./*.pkg.tar.* /build
 fi

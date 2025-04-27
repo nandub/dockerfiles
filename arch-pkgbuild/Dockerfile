@@ -3,12 +3,13 @@
 
 #VERSION        0.0.1
 
-FROM           archlinux:latest
-MAINTAINER     Fernando Ortiz <nandub+docker@nandub.info>
+FROM             archlinux:base-20231112.0.191179 
+LABEL MAINTAINER='Fernando Ortiz <nandub+docker@nandub.info>'
 
 # Generally, refreshing without sync'ing is discouraged, but we've a clean
 # environment here.
-RUN pacman -Sy --noconfirm archlinux-keyring \
+RUN pacman-key --init \
+    && pacman -Sy --noconfirm archlinux-keyring \
     && pacman -Sy --noconfirm --needed base-devel git
 
 # Allow docker to run stuff as root (to install dependencies):
@@ -21,7 +22,7 @@ COPY custom-repo.txt pkg.sh /home/docker/
 RUN cat /home/docker/custom-repo.txt >> /etc/pacman.conf \
     && install -d /home/docker/custompkgs -o docker \
     && repo-add /home/docker/custompkgs/custom.db.tar.gz \
-    && pacman -Sy --noconfirm --needed jq parallel wget \
+    && pacman -Sy --noconfirm --needed jq parallel wget pacutils \
     && pacman -Scc --noconfirm \
     && chown -R docker:docker /home/docker
 
