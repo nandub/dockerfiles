@@ -39,7 +39,7 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && github.ref == 'refs/heads/master')
     env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }}
+      DOCKERHUB_USERNAME: nandub
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
     steps:
@@ -52,11 +52,6 @@ jobs:
       - name: Validate Docker Hub credentials
         shell: bash
         run: |
-          if [ -z "${DOCKERHUB_USERNAME}" ]; then
-            echo "::error::DOCKERHUB_USERNAME is missing. Add it as a repository secret or repository variable."
-            exit 1
-          fi
-
           if [ -z "${DOCKERHUB_TOKEN}" ]; then
             echo "::error::DOCKERHUB_TOKEN is missing. Add it as a repository secret, not a plain repository variable."
             exit 1
