@@ -61,3 +61,22 @@ Useful task shortcuts:
   PS> .\scripts\Invoke-ArchPkgbuildTask.ps1 build-plain
   PS> .\scripts\Invoke-ArchPkgbuildTask.ps1 sizes
 ```
+
+# Publish
+
+GitHub Actions publishes Docker Hub images after the smoke tests pass on a
+`master` branch push, and can also publish from a manual workflow dispatch.
+
+Configure these repository secrets:
+
+```text
+DOCKERHUB_USERNAME
+DOCKERHUB_TOKEN
+```
+
+Published tags:
+
+```text
+nandub/arch-pkgbuild:latest
+nandub/arch-pkgbuild:plain
+```
