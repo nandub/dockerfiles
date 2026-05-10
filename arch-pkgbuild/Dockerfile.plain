@@ -1,0 +1,39 @@
+# BUILD-USING:    docker build -f Dockerfile.plain -t nandub/arch-pkgbuild:plain .
+# RUN-USING:      docker run --rm -it -v "$(pwd)/build:/build" nandub/arch-pkgbuild:plain
+
+#VERSION        0.0.1
+
+ARG ARCH_IMAGE=archlinux:base
+FROM ${ARCH_IMAGE}
+LABEL maintainer="Fernando Ortiz <nandub+docker@nandub.info>"
+
+# Smaller image for PKGBUILDs whose dependencies are all in official repos.
+RUN pacman-key --init \
+    && pacman -Syu --noconfirm --needed \
+        archlinux-keyring \
+        base-devel \
+        git \
+        sudo \
+    && groupadd -r docker \
+    && useradd -m docker -g docker -s /bin/bash \
+    && echo "docker ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker \
+    && chmod 0440 /etc/sudoers.d/docker \
+    && rm -rf /var/cache/pacman/pkg/* /var/lib/pacman/sync/*
+
+COPY pkg.sh /home/docker/
+
+RUN chmod 0755 /home/docker/pkg.sh \
+    && chmod 0755 /home/docker \
+    && chown -R docker:docker /home/docker
+
+USER docker
+WORKDIR /home/docker
+
+RUN mkdir -m 0700 .gnupg \
+    && echo "keyserver-options auto-key-retrieve" > .gnupg/gpg.conf
+
+ENV INSTALL_AUR_DEPS=0
+
+WORKDIR /build
+ENTRYPOINT ["/bin/bash"]
+CMD ["/home/docker/pkg.sh"]

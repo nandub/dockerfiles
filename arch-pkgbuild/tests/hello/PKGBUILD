@@ -1,0 +1,12 @@
+pkgname=hello-pkgbuild-smoke
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='Smoke-test package for the arch-pkgbuild Docker image'
+arch=('any')
+license=('MIT')
+
+package() {
+    install -Dm0644 /dev/stdin "$pkgdir/usr/share/hello-pkgbuild-smoke/message.txt" <<'EOF'
+hello from arch-pkgbuild
+EOF
+}

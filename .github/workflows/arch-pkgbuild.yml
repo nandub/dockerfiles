@@ -1,0 +1,29 @@
+name: arch-pkgbuild
+
+on:
+  push:
+    paths:
+      - 'arch-pkgbuild/**'
+      - '.github/workflows/arch-pkgbuild.yml'
+  pull_request:
+    paths:
+      - 'arch-pkgbuild/**'
+      - '.github/workflows/arch-pkgbuild.yml'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        shell: pwsh
+        working-directory: arch-pkgbuild
+        run: ./scripts/Invoke-ShellCheck.ps1
+
+      - name: Build images and run smoke package
+        shell: pwsh
+        working-directory: arch-pkgbuild
+        run: ./scripts/Test-ArchPkgbuild.ps1

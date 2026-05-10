@@ -1,0 +1,7 @@
+.git
+build
+test-output
+*.pkg.tar*
+pkg
+src
+*.log
