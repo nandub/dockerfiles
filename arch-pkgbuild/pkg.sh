@@ -12,7 +12,7 @@ aur sync --noconfirm --noview \
 set -e
 
 # Do the actual building and install dependencies if needed.
-makepkg -Sf --noconfirm 
+makepkg -srif --noconfirm
 
 if [ -n "$EXPORT_PKG" ]; then
     sudo chown $(stat -c '%u:%g' /build/PKGBUILD) ./*.pkg.tar.*
