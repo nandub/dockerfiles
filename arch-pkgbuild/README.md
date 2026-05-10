@@ -67,15 +67,16 @@ Useful task shortcuts:
 GitHub Actions publishes Docker Hub images after the smoke tests pass on a
 `master` branch push, and can also publish from a manual workflow dispatch.
 
-Configure this repository secret:
+Configure these repository secrets:
 
 ```text
+DOCKERHUB_USERNAME
 DOCKERHUB_TOKEN
 ```
 
-The workflow logs in to Docker Hub as `nandub`. If you store the token as an
-environment-level secret, set the same environment on the `publish` job in
-`.github/workflows/arch-pkgbuild.yml`; otherwise GitHub will not expose it.
+Add them under `Settings -> Secrets and variables -> Actions -> Secrets` as
+repository secrets. Environment secrets are only exposed to jobs that declare
+that environment, and plain variables should not be used for tokens.
 
 Published tags:
 
